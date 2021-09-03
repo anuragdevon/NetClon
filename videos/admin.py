@@ -5,12 +5,10 @@ from .models import (
         VideoAllProxy,
         VideoPublishedProxy
 )
-admin.site.register(Video)
-admin.site.register(VideoPublishedProxy)
 
 # Admin register for all videos proxy
 class VideoAllAdmin(admin.ModelAdmin):        ###
-        list_display = ['title', 'video_id']
+        list_display = ['title', 'id', 'video_id', 'is_published']
         search_fields = ['titile']
 
         class Meta:

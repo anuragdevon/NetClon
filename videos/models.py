@@ -10,6 +10,10 @@ class Video(models.Model):
   video_id = models.CharField(max_length=220)
   active = models.BooleanField(default=True)
 
+  @property
+  def is_published(self):
+    return self.active
+
 # Video Proxy
 class VideoAllProxy(Video): ###
   class Meta:
