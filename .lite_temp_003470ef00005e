@@ -1,5 +1,0 @@
- diff.py                                     | 243 ----------------------------
- manage.py                                   |   2 +-
- netflix/__pycache__/settings.cpython-39.pyc | Bin 2042 -> 1984 bytes
- netflix/settings.py                         |   2 +-
- 4 files changed, 2 insertions(+), 245 deletions(-)

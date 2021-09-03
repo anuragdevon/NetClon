@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'netflix',
-        'USER': 'anurag',
+        'USER': 'postgres',
     }
 }
 
