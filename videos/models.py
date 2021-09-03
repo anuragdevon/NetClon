@@ -2,6 +2,21 @@ from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
 
+# Create Custom Querysets
+class VideoQuerySet(models.QuerySet):     ###
+    def published(self):
+        now = timezone.now()
+        return self.filter(state=Video.VideoStateOptions.PUBLISH, publish_timestamp__lte=now)
+
+# Create Custom Mangers
+class VideoManager(models.Manager):      ###
+    def get_queryset(self):
+      return VideoQuerySet(self.model, using=self._db)
+
+    def published(self):
+      return self.get_queryset().published()
+
+
 # Models for videos
 class Video(models.Model):
     class VideoStateOptions(models.TextChoices):    ###
@@ -20,7 +35,10 @@ class Video(models.Model):
     state = models.CharField(max_length=2, choices=VideoStateOptions.choices) ###
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
-    @property
+    # VideoManager
+    objects = VideoManager()
+
+    @property     ###
     def is_published(self):
         return self.active
 
@@ -44,7 +62,7 @@ class VideoAllProxy(Video): ###
     verbose_name_plural = 'All Videos'
 
 # Published videos proxy
-class VideoPublishedProxy(Video):
+class VideoPublishedProxy(Video):     ###
   class Meta:
     proxy = True
     verbose_name = 'Published Video'

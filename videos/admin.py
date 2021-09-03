@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from .models import (
-        Video,
         VideoAllProxy,
         VideoPublishedProxy
 )
@@ -26,7 +25,7 @@ class VideoPublishedProxyAdmin(admin.ModelAdmin):
                 model = VideoPublishedProxy
 
         def get_queryset(self, request):        ###
-                return VideoProxy.objects.filter(active=True)
+                return VideoAllProxy.objects.filter(active=True)
 
 admin.site.register(VideoPublishedProxy, VideoPublishedProxyAdmin)
 
