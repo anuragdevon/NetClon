@@ -1,18 +1,19 @@
+from datetime import time
 from django.utils import timezone
 from django.utils.text import slugify
 
 from .models import PublishStateOptions
 
-# before saving these will be done and then saved(earlier ot was present in video.models)
-def publish_state_pre_save(sender, instance, *args, **kwargs):
+def publish_state_pre_save(sender, instance, *args, **kwargs):    ###
     is_publish = instance.state == PublishStateOptions.PUBLISH
     is_draft = instance.state == PublishStateOptions.DRAFT
-    if is_publish and instance.publish_timestamp is None:
-        instance.publish_timestamp = timezone.now()
+
+    if is_publish and instance.publish_timstamp is None:
+        instance.publish_timstamp = timezone.now()
     elif is_draft:
         instance.publish_timestamp = None
 
-def slugify_pre_save(sender, instance, *args, **kwargs):
+def slugify_pre_save(sender, instance, *args, **kwargs):    ###
     title = instance.title
     slug = instance.slug
     if slug is None:

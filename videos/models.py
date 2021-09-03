@@ -1,12 +1,17 @@
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from django.db.models.signals import pre_save
+
+from netflix.db.models import PublishStateOptions
+from netflix.db.recievers import publish_state_pre_save, slugify_pre_save
 
 # Create Custom Querysets
 class VideoQuerySet(models.QuerySet):     ###
     def published(self):
         now = timezone.now()
-        return self.filter(state=Video.VideoStateOptions.PUBLISH, publish_timestamp__lte=now)
+        # return self.filter(state=Video.VideoStateOptions.PUBLISH, publish_timestamp__lte=now)
+        return self.filter(state=PublishStateOptions.PUBLISH, publish_timestamp__lte=now)
 
 # Create Custom Mangers
 class VideoManager(models.Manager):      ###
@@ -19,9 +24,9 @@ class VideoManager(models.Manager):      ###
 
 # Models for videos
 class Video(models.Model):
-    class VideoStateOptions(models.TextChoices):    ###
-      PUBLISH = 'PU', 'Publish'
-      DRAFT = 'DR', 'Draft'
+    # class VideoStateOptions(models.TextChoices):    ###
+    #   PUBLISH = 'PU', 'Publish'
+    #   DRAFT = 'DR', 'Draft'
 
 # system break after commit - "add state options"    ###
   # Colums
@@ -32,7 +37,8 @@ class Video(models.Model):
     active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    state = models.CharField(max_length=2, choices=VideoStateOptions.choices) ###
+    state = models.CharField(max_length=2, choices=PublishStateOptions.choices, default=PublishStateOptions.DRAFT) ###
+    # state = models.CharField(max_length=2, choices=VideoStateOptions.choices, default=PublishStateOptions.DRAFT) ###
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
 
     # VideoManager
@@ -42,17 +48,17 @@ class Video(models.Model):
     def is_published(self):
         return self.active
 
-  # Specifying how to save      ###
-    def save(self, *args, **kwargs):
-        if self.state == self.VideoStateOptions.PUBLISH and self.publish_timestamp is None:
-            print("Save as timestamp as published")
-            self.published_timestamp = timezone.now()
+  # # Specifying how to save      ###
+  #   def save(self, *args, **kwargs):
+  #       if self.state == self.VideoStateOptions.PUBLISH and self.publish_timestamp is None:
+  #           print("Save as timestamp as published")
+  #           self.published_timestamp = timezone.now()
 
-        elif self.state == self.VideoStateOptions.DRAFT:
-            self.publish_timestamp = None
-            if self.slug == None:
-                self.slug = slugify(self.title)
-            super().save(*args, **kwargs) ###
+  #       elif self.state == self.VideoStateOptions.DRAFT:
+  #           self.publish_timestamp = None
+  #           if self.slug == None:
+  #               self.slug = slugify(self.title)
+  #           super().save(*args, **kwargs) ###
 
 # Video Proxy
 class VideoAllProxy(Video): ###
@@ -66,3 +72,8 @@ class VideoPublishedProxy(Video):     ###
   class Meta:
     proxy = True
     verbose_name = 'Published Video'
+    verbose_name_plural = 'Published Videos'
+
+# Invoking django signals
+pre_save.connect(publish_state_pre_save, sender=Video)
+pre_save.connect(slugify_pre_save, sender=Video)
