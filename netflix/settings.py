@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     # my apps
     'videos.apps.VideosConfig',
-    'playlists.apps.PlaylistsConfig',
+#     'playlists.apps.PlaylistsConfig',
     # django inbuilt apps
     'django.contrib.admin',
     'django.contrib.auth',
