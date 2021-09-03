@@ -1,5 +1,6 @@
-django/
+env/
 data/
 lite
 .lite_workspace.lua
 .lite_last_project
+netflix/__pycache__/
