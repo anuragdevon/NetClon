@@ -7,10 +7,10 @@ from .models import (
 
 # Admin register for all videos proxy
 class VideoAllAdmin(admin.ModelAdmin):        ###
-        list_display = ['title', 'id', 'state', 'video_id', 'is_published']
+        list_display = ['title', 'id', 'state', 'video_id', 'is_published', 'get_playlist_ids']
         search_fields = ['titile']
         list_filter = ['state', 'active']
-        readonly_fields = ['id', 'is_published', 'publish_timestamp']    ###
+        readonly_fields = ['id', 'is_published', 'publish_timestamp', 'get_playlist_ids']    ###
 
         class Meta:
                 model = VideoAllProxy
