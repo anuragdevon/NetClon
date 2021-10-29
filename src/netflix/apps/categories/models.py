@@ -5,7 +5,11 @@ from django.db.models.signals import pre_save
 
 from netflix.db.receivers import unique_slugify_pre_save
 
-from tags.models import TaggedItem
+import os
+print(os.getcwd())
+
+from ..tags.models import TaggedItem
+
 
 # Create your models here.
 class Category(models.Model):
@@ -27,3 +31,4 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
 pre_save.connect(unique_slugify_pre_save, sender=Category)
+

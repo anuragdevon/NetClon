@@ -9,10 +9,10 @@ from django.utils.text import slugify
 from netflix.db.models import PublishStateOptions
 from netflix.db.receivers import publish_state_pre_save, unique_slugify_pre_save
 
-from categories.models import Category
-from ratings.models import Rating
-from tags.models import TaggedItem
-from videos.models import Video
+from ..categories.models import Category
+from ..ratings.models import Rating
+from ..tags.models import TaggedItem
+from ..videos.models import Video
 
 
 class PlaylistQuerySet(models.QuerySet):

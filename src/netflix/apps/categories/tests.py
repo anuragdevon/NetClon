@@ -1,3 +1,5 @@
+# Start File: src/netflix/apps/categories/tests.py
+
 from django.test import TestCase
 
 from playlists.models import Playlist
@@ -21,3 +23,5 @@ class CategoryTestCase(TestCase):
     def test_related_playlist(self):
         qs = self.cat_a.playlists.all()
         self.assertEqual(qs.count(), 1)
+
+# End File: src/netflix/apps/categories/tests.py
