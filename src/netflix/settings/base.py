@@ -77,6 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Static Files
 STATIC_URL = '/static/'
 
+
 # Internationalization
 
 LANGUAGE_CODE = os.environ["LANGUAGE_CODE"]
