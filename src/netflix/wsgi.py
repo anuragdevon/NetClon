@@ -8,9 +8,18 @@ https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/
 """
 
 import os
+from dotenv import load_dotenv
+from django.core.wsgi import get_wsgi_application
+
+# Load environment variables 
+load_dotenv()
+
+import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "netflix.settings.developement")
+ServiceModule = os.getenv('SERVICE_MODULE')
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", ServiceModule)
 
 application = get_wsgi_application()

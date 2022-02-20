@@ -17,3 +17,9 @@ env
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# Formattings
+src/pyproject.toml
+
+# Docker
+data/

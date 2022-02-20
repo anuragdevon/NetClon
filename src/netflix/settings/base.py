@@ -1,20 +1,12 @@
 # Imports
-try:
-    import os
-    from pathlib import Path
-    from dotenv import load_dotenv
-
-except Exception as e:
-    print(e.args[0])
+import os
+from pathlib import Path
     
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables
-load_dotenv()
-
 # Django Secret Encryption key
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Application definition
 INSTALLED_APPS = [
@@ -81,6 +73,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+# Static Files
+STATIC_URL = '/static/'
+
 # Internationalization
 
 LANGUAGE_CODE = os.environ["LANGUAGE_CODE"]
@@ -92,10 +88,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-STATIC_URL = "/static/"
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

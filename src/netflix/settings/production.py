@@ -1,42 +1,37 @@
 # Imports
-try:
-    from .base import *
-    import os
-
-except Exception as e:
-    print(e)
+from .base import *
+import os
 
 # Set Debug to "False" in .env
-DEBUG = os.environ['DEBUG']
+DEBUG = True
 
 # Allowed hosts in Cloud Services
-ALLOWED_HOSTS = ['ip-address', 'https://Appurl.com/']           # NOTE:replace with actual address
+ALLOWED_HOSTS = ["*"]
 
-# Database(Ignore for Cloud SQL)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.psycopg2',
-        'NAME': 'netflix',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ['DB_NAME'],
         'USER': os.environ['DB_USER'],
         'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.environ['DB_HOST'],
-        'PORT': ''
+        'HOST': 'db',
+        'PORT': int(os.environ['DB_PORT'])
     }
 }
 
 # Production Server
 
 
-# Django Inbuilt Security Vars
+# # Django Inbuilt Security Vars
 
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_HTTPONLY = True
 
-SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7 * 52  # one year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_SSL_REDIRECT = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+# SECURE_HSTS_SECONDS = 60 * 60 * 24 * 7 * 52  # one year
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_SSL_REDIRECT = True
+# SECURE_BROWSER_XSS_FILTER = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
