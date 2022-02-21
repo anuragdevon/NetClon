@@ -19,6 +19,10 @@ WORKDIR /netflix_demo
 # Add Files
 ADD src /netflix_demo/src/
 COPY requirements.txt /netflix_demo/
+COPY init.sh /netflix_demo/
+
+# Make scripts executable
+RUN chmod +x /netflix_demo/init.sh
 
 # Install project dependencies
 RUN pip install -r /netflix_demo/requirements.txt
@@ -26,8 +30,3 @@ RUN pip install -r /netflix_demo/requirements.txt
 
 # Expose ports
 EXPOSE 8000
-
-# Start Sub-processes
-# WORKDIR /netflix_demo/src
-# CMD export ENVIRONMENT=".env_prod" && python service.py | tee /service.log
-# # -------------------------------------------------------

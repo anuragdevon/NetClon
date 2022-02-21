@@ -3,27 +3,10 @@ from .base import *
 import os
 
 # Set Debug to "False" in .env
-DEBUG = False
+DEBUG = True
 
 # Allowed hosts in Cloud Services
 ALLOWED_HOSTS = ["*"]
-
-# Database Initialization
-# import psycopg2
-# try:
-#     conn = psycopg2.connect(
-#     database="postgres", user='postgres', password='postgres', host='db', port= 5432
-#     )
-#     conn.autocommit = True
-#     sql = "SELECT * FROM INFORMATION_SCHEMA.tables"
-#     cur = conn.cursor()
-#     print(cur.execute(sql))
-#     # print("Database created successfully........")
-# except (Exception, psycopg2.DatabaseError) as error:
-#     print("ERRRRRRR: ",error)
-
-#Closing the connection
-# conn.close()
 
 DATABASES = {
     'default': {
