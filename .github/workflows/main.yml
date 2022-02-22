@@ -1,0 +1,68 @@
+name: netflix-backend-demo CD
+
+# Basic OPs
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Environement variables setup
+env:
+  HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+  POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+
+  SERVICE_MODULE: ${{ secrets.SERVICE_MODULE }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+# Setup jobs
+jobs:
+  deploy:
+    name: Deploy to Heroku
+    runs-on: ubuntu-latest
+    steps:
+    
+      # Clone the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      #  Setup Production Environment Variables
+      - name: Create env files
+        run: |
+          touch .env
+          echo POSTGRES_NAME =$POSTGRES_NAME >> .env
+          echo DB_PORT=$DB_PORT >> .env
+          echo DB_HOST==$DB_HOST >> .env
+          echo DB_PASSWORD=$DB_PASSWORD >> .env
+          echo DB_USER=$DB_USER >> .env
+          echo DB_NAME=$DB_NAME >> .env
+
+          touch src/.env_app
+          echo DB_PORT=$DB_PORT >> src/.env_app
+          echo DB_HOST=$DB_HOST >> src/.env_app
+          echo DB_PASSWORD=$DB_PASSWORD >> src/.env_app
+          echo DB_USER=$DB_USER >> src/.env_app
+          echo DB_NAME=$DB_NAME >> src/.env_app
+
+          echo SERVICE_MODULE=$SERVICE_MODULE >> src/.env_app
+          echo SECRET_KEY=$SECRET_KEY >> src/.env_app
+
+
+      # Build Docker Image
+      - name: Docker Build
+        run: docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+
+      # Push the docker image to container registry
+      - name: Publish
+        run: |
+          heroku addons:create heroku-postgresql:hobby-dev
+          heroku container:push web --app $HEROKU_APP_NAME
+          heroku container:release web --app $HEROKU_APP_NAME
