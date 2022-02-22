@@ -9,13 +9,6 @@ services:
       - POSTGRES_NAME=${POSTGRES_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
-      timeout: 45s
-      interval: 10s
-      retries: 10
-    restart: always
-
   web:
     build: .
     command: ./init.sh
