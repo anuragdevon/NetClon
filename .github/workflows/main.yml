@@ -55,6 +55,9 @@ jobs:
           echo SERVICE_MODULE=$SERVICE_MODULE >> src/.env_app
           echo SECRET_KEY=$SECRET_KEY >> src/.env_app
 
+      # Clone the repository
+      - name: Docker Compose
+        uses: docker-compose up
 
       # Build Docker Image
       - name: Docker Build
