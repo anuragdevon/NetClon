@@ -3,10 +3,9 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.db.models.signals import pre_save
 
-
 class TaggedItemManager(models.Manager):
     def unique_list(self):
-        tags_set = set(self.get_queryset().values_list("tag", flat=True))
+        tags_set = set(self.get_queryset().values_list('tag', flat=True))
         tags_list = sorted(list(tags_set))
         return tags_list
 

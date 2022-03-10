@@ -5,8 +5,7 @@ from django.db import models
 from django.db.models import Avg
 from django.db.models.signals import post_save
 
-User = settings.AUTH_USER_MODEL  # "auth.User"
-
+User = settings.AUTH_USER_MODEL # "auth.User"
 
 class RatingChoices(models.IntegerChoices):
     ONE = 1
@@ -14,12 +13,11 @@ class RatingChoices(models.IntegerChoices):
     THREE = 3
     FOUR = 4
     FIVE = 5
-    __empty__ = "Rate this"
-
+    __empty__ = 'Rate this'
 
 class RatingQuerySet(models.QuerySet):
     def rating(self):
-        return self.aggregate(average=Avg("value"))["average"]
+        return self.aggregate(average=Avg("value"))['average']
 
 
 class RatingManager(models.Manager):
@@ -42,9 +40,7 @@ def rating_post_save(sender, instance, created, *args, **kwargs):
         # trigger new content_object calculation
         content_type = instance.content_type
         user = instance.user
-        qs = Rating.objects.filter(user=user, content_type=content_type, object_id=instance.object_id).exclude(
-            pk=instance.pk
-        )
+        qs = Rating.objects.filter(user=user, content_type=content_type, object_id=instance.object_id).exclude(pk=instance.pk)
         if qs.exists():
             qs.delete()
 

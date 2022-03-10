@@ -4,36 +4,39 @@ from django.db.models import Avg, Max, Min, Q
 from django.db.models.signals import pre_save
 from django.utils import timezone
 from django.utils.text import slugify
-
 # Create your models here.
 from netflix.db.models import PublishStateOptions
 from netflix.db.receivers import publish_state_pre_save, unique_slugify_pre_save
 
-from ..categories.models import Category
-from ..ratings.models import Rating
-from ..tags.models import TaggedItem
-from ..videos.models import Video
+from netflix.apps.categories.models import Category
+from netflix.apps.ratings.models import Rating
+from netflix.apps.tags.models import TaggedItem
+from netflix.apps.videos.models import Video
 
 
 class PlaylistQuerySet(models.QuerySet):
     def published(self):
         now = timezone.now()
-        return self.filter(state=PublishStateOptions.PUBLISH, publish_timestamp__lte=now)
-
+        return self.filter(
+            state=PublishStateOptions.PUBLISH,
+            publish_timestamp__lte= now 
+        )
     def search(self, query=None):
         if query is None:
             return self.none()
         return self.filter(
-            Q(title__icontains=query)
-            | Q(description__icontains=query)
-            | Q(category__title__icontains=query)
-            | Q(category__slug__icontains=query)
-            | Q(tags__tag__icontains=query)
+            Q(title__icontains=query) |
+            Q(description__icontains=query) | 
+            Q(category__title__icontains=query) |
+            Q(category__slug__icontains=query) |
+            Q(tags__tag__icontains=query)
         ).distinct()
 
     def movie_or_show(self):
-        return self.filter(Q(type=Playlist.PlaylistTypeChoices.MOVIE) | Q(type=Playlist.PlaylistTypeChoices.SHOW))
-
+        return self.filter(
+            Q(type=Playlist.PlaylistTypeChoices.MOVIE) |
+            Q(type=Playlist.PlaylistTypeChoices.SHOW)
+        )
 
 class PlaylistManager(models.Manager):
     def get_queryset(self):
@@ -46,34 +49,32 @@ class PlaylistManager(models.Manager):
         return self.get_queryset().filter(type=Playlist.PlaylistTypeChoices.PLAYLIST)
 
 
+
 class Playlist(models.Model):
     class PlaylistTypeChoices(models.TextChoices):
         MOVIE = "MOV", "Movie"
-        SHOW = "TVS", "TV Show"
-        SEASON = "SEA", "Season"
-        PLAYLIST = "PLY", "Playlist"
-
+        SHOW = 'TVS', "TV Show"
+        SEASON = 'SEA', "Season"
+        PLAYLIST = 'PLY', "Playlist"
     parent = models.ForeignKey("self", blank=True, null=True, on_delete=models.SET_NULL)
-    related = models.ManyToManyField("self", blank=True, related_name="related", through="PlaylistRelated")
-    category = models.ForeignKey(Category, related_name="playlists", blank=True, null=True, on_delete=models.SET_NULL)
+    related = models.ManyToManyField("self", blank=True, related_name='related', through='PlaylistRelated')
+    category = models.ForeignKey(Category, related_name='playlists', blank=True, null=True, on_delete=models.SET_NULL)
     order = models.IntegerField(default=1)
     title = models.CharField(max_length=220)
     type = models.CharField(max_length=3, choices=PlaylistTypeChoices.choices, default=PlaylistTypeChoices.PLAYLIST)
     description = models.TextField(blank=True, null=True)
     slug = models.SlugField(blank=True, null=True)
-    video = models.ForeignKey(
-        Video, related_name="playlist_featured", blank=True, null=True, on_delete=models.SET_NULL
-    )  # one video per playlist
-    videos = models.ManyToManyField(Video, related_name="playlist_item", blank=True, through="PlaylistItem")
+    video = models.ForeignKey(Video, related_name='playlist_featured', blank=True, null=True, on_delete=models.SET_NULL) # one video per playlist
+    videos = models.ManyToManyField(Video, related_name='playlist_item', blank=True, through='PlaylistItem')
     active = models.BooleanField(default=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     state = models.CharField(max_length=2, choices=PublishStateOptions.choices, default=PublishStateOptions.DRAFT)
     publish_timestamp = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, null=True)
-    tags = GenericRelation(TaggedItem, related_query_name="playlist")
-    ratings = GenericRelation(Rating, related_query_name="playlist")
+    tags = GenericRelation(TaggedItem, related_query_name='playlist')
+    ratings = GenericRelation(Rating, related_query_name='playlist')
     objects = PlaylistManager()
-
+    
     def __str__(self):
         return self.title
 
@@ -127,6 +128,10 @@ class Playlist(models.Model):
     @property
     def is_published(self):
         return self.active
+    
+
+
+
 
 
 class MovieProxyManager(PlaylistManager):
@@ -143,10 +148,10 @@ class MovieProxy(Playlist):
         get movie id to render movie for users
         """
         return self.get_video_id()
-
+    
     class Meta:
-        verbose_name = "Movie"
-        verbose_name_plural = "Movies"
+        verbose_name = 'Movie'
+        verbose_name_plural = 'Movies'
         proxy = True
 
     def save(self, *args, **kwargs):
@@ -154,18 +159,18 @@ class MovieProxy(Playlist):
         super().save(*args, **kwargs)
 
 
+
 class TVShowProxyManager(PlaylistManager):
     def all(self):
         return self.get_queryset().filter(parent__isnull=True, type=Playlist.PlaylistTypeChoices.SHOW)
-
 
 class TVShowProxy(Playlist):
 
     objects = TVShowProxyManager()
 
     class Meta:
-        verbose_name = "TV Show"
-        verbose_name_plural = "TV Shows"
+        verbose_name = 'TV Show'
+        verbose_name_plural = 'TV Shows'
         proxy = True
 
     def save(self, *args, **kwargs):
@@ -179,19 +184,21 @@ class TVShowProxy(Playlist):
     def get_short_display(self):
         return f"{self.seasons.count()} Seasons"
 
+    
+
+
 
 class TVShowSeasonProxyManager(PlaylistManager):
     def all(self):
         return self.get_queryset().filter(parent__isnull=False, type=Playlist.PlaylistTypeChoices.SEASON)
-
 
 class TVShowSeasonProxy(Playlist):
 
     objects = TVShowSeasonProxyManager()
 
     class Meta:
-        verbose_name = "Season"
-        verbose_name_plural = "Seasons"
+        verbose_name = 'Season'
+        verbose_name_plural = 'Seasons'
         proxy = True
 
     def save(self, *args, **kwargs):
@@ -211,6 +218,8 @@ class TVShowSeasonProxy(Playlist):
         qs = self.playlistitem_set.all().published()
         print(qs)
         return qs
+    
+
 
 
 class PlaylistItemQuerySet(models.QuerySet):
@@ -218,11 +227,10 @@ class PlaylistItemQuerySet(models.QuerySet):
         now = timezone.now()
         return self.filter(
             playlist__state=PublishStateOptions.PUBLISH,
-            playlist__publish_timestamp__lte=now,
+            playlist__publish_timestamp__lte= now,
             video__state=PublishStateOptions.PUBLISH,
-            video__publish_timestamp__lte=now,
+            video__publish_timestamp__lte= now 
         )
-
 
 class PlaylistItemManager(models.Manager):
     def get_queryset(self):
@@ -241,20 +249,20 @@ class PlaylistItem(models.Model):
     objects = PlaylistItemManager()
 
     class Meta:
-        ordering = ["order", "-timestamp"]
+        ordering = ['order', '-timestamp']
 
 
 def pr_limit_choices_to():
-    return Q(type=Playlist.PlaylistTypeChoices.MOVIE) | Q(type=Playlist.PlaylistTypeChoices.SHOW)
-
+    return Q(type=Playlist.PlaylistTypeChoices.MOVIE) |  Q(type=Playlist.PlaylistTypeChoices.SHOW)
 
 class PlaylistRelated(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
-    related = models.ForeignKey(
-        Playlist, on_delete=models.CASCADE, related_name="related_item", limit_choices_to=pr_limit_choices_to
-    )
+    related = models.ForeignKey(Playlist, on_delete=models.CASCADE, related_name='related_item', limit_choices_to=pr_limit_choices_to)
     order = models.IntegerField(default=1)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+
 
 
 pre_save.connect(publish_state_pre_save, sender=TVShowProxy)
