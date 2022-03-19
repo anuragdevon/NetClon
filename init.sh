@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# Collect static files
+set -e
+psql -v ON_ERROR_STOP=1 --username "postgres" --dbname "netflixdemo" <<-EOSQL
+  CREATE USER postgres WITH PASSWORD 'postgres';
+  CREATE DATABASE netflixdemo;
+  GRANT ALL PRIVILEGES ON DATABASE netflixdemo TO postgres;
+EOSQL
 
 # Apply database migrations
 echo "Initiate database migrations"
