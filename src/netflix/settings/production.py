@@ -3,7 +3,7 @@ from .base import *
 import os
 
 # Set Debug to "False" in .env
-DEBUG = True
+DEBUG = False
 
 # Allowed hosts in Cloud Services
 ALLOWED_HOSTS = ["*"]
